@@ -5,5 +5,5 @@ variable "aws_region" {
 
 variable "bucket_name" {
   description = "Nome do bucket S3"
-  default     = "devops-bucket-exemplo-12345"
+  default     = "projeto-devops-dani-001"
 }
