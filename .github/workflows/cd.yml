@@ -1,0 +1,27 @@
+name: CD Pipeline
+
+on:
+  workflow_run:
+    workflows: ["CI Pipeline"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Login Docker
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USER }}" --password-stdin
+
+      - name: Build da imagem
+        run: docker build -t ${{ secrets.DOCKER_USER }}/projeto-devops:latest .
+
+      - name: Enviar imagem
+        run: docker push ${{ secrets.DOCKER_USER }}/projeto-devops:latest
